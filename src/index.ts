@@ -1,0 +1,1 @@
+export { MongoRoleManager } from './mongo-role-manager';
