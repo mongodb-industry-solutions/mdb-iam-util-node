@@ -1,0 +1,23 @@
+{
+  "name": "mdb-iam-util-node",
+  "version": "1.0.0",
+  "description": "This repository is a utility project focused on streamlining IAM processes for MongoDB and Node.Js",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mongodb-industry-solutions/mdb-iam-util-node.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mongodb-industry-solutions/mdb-iam-util-node/issues"
+  },
+  "homepage": "https://github.com/mongodb-industry-solutions/mdb-iam-util-node#readme"
+}
