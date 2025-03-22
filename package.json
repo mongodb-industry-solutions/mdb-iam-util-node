@@ -8,6 +8,7 @@
     "test": "tests"
   },
   "scripts": {
+    "dev": "ts-node src/index.ts",
     "build": "tsc",
     "test": "jest",
     "prepare": "npm run build"
