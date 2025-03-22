@@ -1,4 +1,4 @@
-# MongoDB IAM Utilities for Node.Js and JavaScript/TypeScript
+# MongoDB IAM Utilities for Node.Js (JavaScript/TypeScript)
 This repository is a utility project focused on streamlining IAM processes for MongoDB, leveraging the native driver (Node.js this case), with the understanding that similar projects could be developed for other platforms. Its goal is to simplify and accelerate security-related tasks, making IAM management more efficient.
 
 Role Rectifier is a Python package that helps manage and validate user roles and privileges in MongoDB databases. It allows developers to:
