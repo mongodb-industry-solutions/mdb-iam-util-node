@@ -10,7 +10,7 @@ Role Rectifier is a Python package that helps manage and validate user roles and
 
 This package is designed for system administrators, DevOps engineers, and developers who manage MongoDB access control and want to ensure role consistency and security.
 
-Develop by [Solution Assurance](https://sites.google.com/mongodb.com/solutions-assurance/).
+Developed by [Solution Assurance](https://sites.google.com/mongodb.com/solutions-assurance/).
 
 ## 📌 Installation
 ```sh
