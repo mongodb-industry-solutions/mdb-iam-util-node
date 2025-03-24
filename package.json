@@ -1,6 +1,6 @@
 {
   "name": "@mongodb-solution-assurance/iam-util",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "This repository is a utility project focused on streamlining IAM processes for MongoDB and Node.Js",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -19,7 +19,7 @@
     "test": "jest",
     "check": "eslint --max-warnings=0 --ext '.js,.ts' src --fix",
     "prepare": "npm run build",
-    "publish": "npm publish --access public"
+    "publish": "npm run build & npm publish --access public"
   },
   "repository": {
     "type": "git",
