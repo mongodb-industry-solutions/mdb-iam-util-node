@@ -10,12 +10,13 @@
     "moduleResolution": "bundler",
     "target": "ES2022",
     "strict": true,
+    "alwaysStrict": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "declaration": true
   },
   "include": [
-    "src"
+    "src/**/*"
   ],
   "exclude": [
     "node_modules",
