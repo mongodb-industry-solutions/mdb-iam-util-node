@@ -26,7 +26,7 @@ npm test
 Connect to MongoDB and Retrieve User Roles
 
 ```js
-import { MongoRoleManager } from "mdb-iam-util-node";
+import { MongoRoleManager } from "@mongodb-solution-assurance/iam-util";
 
 // Replace with your MongoDB connection string data
 const dbUsername = "db_username";
