@@ -14,7 +14,7 @@ Developed by [Solution Assurance](https://sites.google.com/mongodb.com/solutions
 
 ## 📌 Installation
 ```sh
-npm install mdb-iam-util-node
+npm install @mongodb-solution-assurance/iam-util
 ``` 
 
 ## 🔬 Test
