@@ -64,8 +64,7 @@ describe('MongoRoleManager', () => {
         const invalidConnectionString = 'invalid-connection-string';
         const invalidRoleManager = new MongoRoleManager(invalidConnectionString);
 
-        const roles = await invalidRoleManager.getUserRoles();
-        expect(roles).toEqual([]);
+        await expect(invalidRoleManager.getUserRoles()).rejects.toThrow('Username must be provided or extracted from the connection string.');
 
         const privileges = await invalidRoleManager.getPrivilegesOfRole('invalidRole');
         expect(privileges).toEqual([]);

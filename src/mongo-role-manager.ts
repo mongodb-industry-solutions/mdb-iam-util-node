@@ -13,7 +13,7 @@ export class MongoRoleManager {
 
     private extractCredentials(uri: string): void {
         const match = uri.match(/mongodb\+srv:\/\/([^:]+):([^@]+)@/);
-        if (match) {
+        if (Array.isArray(match)) {
             this.username = match[1];
             this.password = match[2];
         }
@@ -34,7 +34,6 @@ export class MongoRoleManager {
     }
 
     async getUserRoles(username?: string): Promise<string[]> {
-        await this.connect();
         const rolesInfo: { [dbName: string]: Document[] } = {};
 
         const targetUsername = username || this.username;
@@ -43,6 +42,7 @@ export class MongoRoleManager {
         }
 
         try {
+            await this.connect();
             const databases = await this.client!.db().admin().listDatabases();
             for (const dbInfo of databases.databases) {
                 const dbName = dbInfo.name;
@@ -73,10 +73,10 @@ export class MongoRoleManager {
     }
 
     async getPrivilegesOfRole(roleName: string): Promise<string[]> {
-        await this.connect();
         const privileges = new Set<string>();
 
         try {
+            await this.connect();
             const adminDb: Db = this.client!.db('admin');
             const roleInfo = await adminDb.command({
                 rolesInfo: roleName,
