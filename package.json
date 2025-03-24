@@ -7,6 +7,12 @@
   "directories": {
     "test": "tests"
   },
+  "files": [
+    "dist/*",
+    "index.js",
+    "LICENSE",
+    "README.md"
+  ],
   "scripts": {
     "dev": "ts-node src/index.ts",
     "build": "tsc",

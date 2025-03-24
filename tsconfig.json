@@ -3,6 +3,7 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "allowJs": true,
+    "checkJs": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "module": "ES2022",
