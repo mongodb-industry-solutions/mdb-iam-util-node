@@ -17,7 +17,7 @@
     "dev": "ts-node src/index.ts",
     "build": "tsc",
     "test": "jest",
-    "check": "eslint --max-warnings=0 --ext '.js,.ts' src",
+    "check": "eslint --max-warnings=0 --ext '.js,.ts' src --fix",
     "prepare": "npm run build"
   },
   "repository": {
@@ -53,5 +53,8 @@
   },
   "dependencies": {
     "mongodb": "^6.15.0"
+  },
+  "engines": {
+    "node": ">=16.20.1"
   }
 }
