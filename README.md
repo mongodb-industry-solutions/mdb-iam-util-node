@@ -10,9 +10,11 @@ Role Rectifier is a Python package that helps manage and validate user roles and
 
 This package is designed for system administrators, DevOps engineers, and developers who manage MongoDB access control and want to ensure role consistency and security.
 
+Developed by [Solution Assurance](https://sites.google.com/mongodb.com/solutions-assurance/).
+
 ## 📌 Installation
 ```sh
-npm install mdb-iam-util-node
+npm install @mongodb-solution-assurance/iam-util
 ``` 
 
 ## 🔬 Test
@@ -24,23 +26,32 @@ npm test
 Connect to MongoDB and Retrieve User Roles
 
 ```js
-import { MongoRoleManager } from "mdb-iam-util-node";
+import { MongoRoleManager } from "@mongodb-solution-assurance/iam-util";
 
-// Replace with your MongoDB connection string data
-const dbUsername = "db_username";
-const dbPassword = "db_password";
-const dbHost = "mydb.kts.mongodb.net";
-const dbApp = "MyLocalApp";
+(async () => {
 
-let connectionString = `mongodb+srv://${dbUsername}:${dbPassword}@${dbHost}/?retryWrites=true&w=majority&appName=${dbApp}`;
+    // Replace with your MongoDB connection string data
+    const dbUsername = "db_username";
+    const dbPassword = "db_password";
+    const dbHost = "mydb.kts.mongodb.net";
+    const dbApp = "MyLocalApp";
+    const connectionString = `mongodb+srv://${dbUsername}:${dbPassword}@${dbHost}/?retryWrites=true&w=majority&appName=${dbApp}`;
 
-// Create the role manager instance
-let roleManager = new MongoRoleManager(connectionString);
+    // Create the role manager instance
+    let roleManager = new MongoRoleManager(connectionString);
 
-// Get user roles
-let userRoles = roleManager.getUserRoles();
+    // Get user roles
+    let userRoles = await roleManager.getUserRoles();
 
-console.log(userRoles);
+    console.log(userRoles);
+    /* OUTPUT:
+        [
+            'MyCustomRole',
+            'read',
+            'readWrite'
+        ]
+    */
+})()
 ```
 This code snippet establishes a connection to a MongoDB database using a constructed connection string, then utilizes a `MongoRoleManager` instance to retrieve the roles assigned to the authenticated user. It serves to programmatically access and display the user's role-based access control within the MongoDB environment, facilitating security audits and role management.
 
@@ -59,7 +70,7 @@ let requiredPermissions = [
     "collMod",
 ]
 
-let permissions = roleManager.verifyPermissions(requiredPermissions);
+let permissions = await roleManager.verifyPermissions(requiredPermissions);
 
 // over-privileged
 console.log("Extra Permissions:", permissions["extra"]);
@@ -69,6 +80,31 @@ console.log("Missing Permissions:", permissions["missing"]);
 
 // required-privileged
 console.log("Valid Permissions:", permissions["present"]);
+
+
+/* OUTPUT:
+
+    Extra Permissions: [
+        'changeStream',
+        'createCollection',
+        'dbStats',
+        'listCollections',
+        'collStats',
+        'dbHash',
+        'killCursors',
+        'listIndexes',
+        'listSearchIndexes',
+        'planCacheRead',
+        'convertToCapped',
+        'createIndex',
+        'dropCollection',
+        'dropIndex'
+    ]
+
+    Missing Permissions: [ 'search', 'read' ]
+
+    Valid Permissions: [ 'find', 'insert', 'update', 'remove', 'collMod' ]
+*/
 ```
 
 The provided code snippet demonstrates how to effectively verify and manage user permissions within a MongoDB environment. Utilizing the `verifyPermissions` method, it compares a list of `requiredPermissions` against the actual privileges granted to the user, as determined by their assigned roles. 
