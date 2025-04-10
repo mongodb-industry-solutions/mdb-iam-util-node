@@ -115,3 +115,8 @@ This process then categorizes permissions into three distinct groups:
 - **Valid Permissions:** confirms the required privileges that are correctly assigned. 
 
 This functionality allows for precise auditing and adjustment of user access, ensuring adherence to security best practices and minimizing risks associated with excessive or insufficient permissions.
+
+## Related projects
+- [mdb-iam-util-demo](https://github.com/mongodb-industry-solutions/mdb-iam-util-demo): Demo application to implement some utilities, packages, and libraries related to IAM processes.
+- [mdb-iam-util-python](https://github.com/mongodb-industry-solutions/mdb-iam-util-python): This repository is a utility project focused on streamlining IAM processes for MongoDB and Python
+- [mdb-iam-util-demo](https://github.com/mongodb-industry-solutions/mdb-iam-util-node): This repository is a utility project focused on streamlining IAM processes for MongoDB and Node.Js
