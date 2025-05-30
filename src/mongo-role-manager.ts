@@ -1,143 +1,118 @@
-import { MongoClient, Db, Document } from 'mongodb';
+import { AuthOptions } from './models/AuthOptions';
+import { IRoleManager } from './models/IRoleManager';
+import { StaticLocator as Loader } from './utils/locator';
 
-export class MongoRoleManager {
-    private uri: string;
-    private client: MongoClient | null = null;
-    private username: string | null = null;
-    private password: string | null = null;
+/**
+ * Class responsible for managing roles and permissions in a MongoDB system.
+ * It utilizes a dynamic loader to instantiate the appropriate role manager implementation
+ * based on the selected authentication type (e.g., SCRAM or X.509).
+ */
+export class MongoRoleManager implements IRoleManager {
+    /**
+     * Authentication options defining connection details.
+     * Includes the URI, authentication type, and any additional parameters.
+     */
+    protected opts: AuthOptions;
 
-    constructor(uri: string) {
-        this.uri = uri;
-        this.extractCredentials(uri);
-    }
+    /**
+     * Instance of the dynamic Loader used for injecting dependencies.
+     */
+    protected ioc: Loader;
 
-    private extractCredentials(uri: string): void {
-        const match = uri.match(/mongodb\+srv:\/\/([^:]+):([^@]+)@/);
-        if (Array.isArray(match)) {
-            this.username = match[1];
-            this.password = match[2];
+    /**
+     * Constructor for the `MongoRoleManager` class.
+     * Initializes the authentication options and prepares an instance of the Loader.
+     * @param uri - Can be a string representing a MongoDB URI or an `AuthOptions` object.
+     * If no value is provided, defaults to an empty options object.
+     */
+    constructor(uri?: string | AuthOptions) {
+        try {
+            this.opts = (typeof uri === 'string' ? { uri } : uri) || {};
+            this.ioc = Loader.getInstance(); // Singleton instance of Loader for dependency injection.
+        } catch (error) {
+            throw new Error(`Failed to initialize MongoRoleManager: ${(error as Error).message}`);
         }
     }
 
-    private async connect(): Promise<void> {
-        if (!this.client) {
-            this.client = new MongoClient(this.uri);
-            await this.client.connect();
+    /**
+     * Static loads and instantiates the appropriate role manager implementation.
+     * The type of manager loaded (e.g., SCRAM, X.509) is based on the `type` property in `AuthOptions`.
+     * @returns A promise resolving to an instance of `IRoleManager`.
+     */
+    async getSrv(): Promise<IRoleManager> {
+        try {
+            this.opts.authMechanism = this.opts.authMechanism || "DEFAULT";
+            let srv = this.ioc.get<IRoleManager>(this.opts.authMechanism, [this.opts]);
+            if (!srv) {
+                throw new Error(`No supported method: ${this.opts.authMechanism}`);
+            }
+            return Promise.resolve(srv);
+        } catch (error) {
+            throw new Error(`Failed to load RoleManager service: ${(error as Error).message}`);
         }
     }
 
-    private async disconnect(): Promise<void> {
-        if (this.client) {
-            await this.client.close();
-            this.client = null;
+    /**
+     * Retrieves the username for the authenticated user or the specified user.
+     * Delegates the operation to the dynamically loaded role manager instance.
+     * @param username - Optional username to retrieve; if undefined, defaults to the current authenticated user.
+     * @returns A promise resolving to the username as a string.
+     */
+    async getUsername(username?: string): Promise<string> {
+        try {
+            const srv = await this.getSrv();
+            return await srv.getUsername(username);
+        } catch (error) {
+            throw new Error(`Failed to retrieve username: ${(error as Error).message}`);
         }
     }
 
+    /**
+     * Retrieves the roles assigned to a user.
+     * Delegates the operation to the dynamically loaded role manager instance.
+     * @param username - Optional username to retrieve roles for; if undefined, defaults to the current authenticated user.
+     * @returns A promise resolving to a list of roles as an array of strings.
+     */
     async getUserRoles(username?: string): Promise<string[]> {
-        const rolesInfo: { [dbName: string]: Document[] } = {};
-
-        const targetUsername = username || this.username;
-        if (!targetUsername) {
-            throw new Error('Username must be provided or extracted from the connection string.');
-        }
-
         try {
-            await this.connect();
-            const databases = await this.client!.db().admin().listDatabases();
-            for (const dbInfo of databases.databases) {
-                const dbName = dbInfo.name;
-                try {
-                    const db: Db = this.client!.db(dbName);
-                    const userInfo = await db.command({ usersInfo: targetUsername });
-                    if (userInfo.users && userInfo.users.length > 0 && userInfo.users[0].roles) {
-                        rolesInfo[dbName] = userInfo.users[0].roles;
-                    }
-                } catch (dbError) {
-                    // Ignore databases where the user does not exist
-                }
-            }
-        } finally {
-            await this.disconnect();
-        }
-
-        if (rolesInfo.admin && Array.isArray(rolesInfo.admin)) {
-            const rolesSet = new Set(
-                rolesInfo.admin
-                    .filter((item: any) => item && item.role)
-                    .map((item: any) => item.role)
-            );
-            return Array.from(rolesSet);
-        } else {
-            return [];
+            const srv = await this.getSrv();
+            return await srv.getUserRoles(username);
+        } catch (error) {
+            throw new Error(`Failed to retrieve user roles: ${(error as Error).message}`);
         }
     }
 
+    /**
+     * Retrieves the privileges associated with a specific role.
+     * Delegates the operation to the dynamically loaded role manager instance.
+     * @param roleName - The name of the role to retrieve privileges for.
+     * @returns A promise resolving to a list of privileges as an array of strings.
+     */
     async getPrivilegesOfRole(roleName: string): Promise<string[]> {
-        const privileges = new Set<string>();
-
         try {
-            await this.connect();
-            const adminDb: Db = this.client!.db('admin');
-            const roleInfo = await adminDb.command({
-                rolesInfo: roleName,
-                showPrivileges: true,
-                showBuiltinRoles: true,
-            });
-
-            if (roleInfo.roles && Array.isArray(roleInfo.roles)) {
-                roleInfo.roles.forEach((role: any) => {
-                    if (role.privileges && Array.isArray(role.privileges)) {
-                        role.privileges.forEach((privilege: any) => {
-                            if (privilege.actions && Array.isArray(privilege.actions)) {
-                                privilege.actions.forEach((action: string) => privileges.add(action));
-                            }
-                        });
-                    }
-                });
-            }
-        } catch (e) {
-            console.error(`Unexpected error: ${e}`);
-        } finally {
-            await this.disconnect();
+            const srv = await this.getSrv();
+            return await srv.getPrivilegesOfRole(roleName);
+        } catch (error) {
+            throw new Error(`Failed to retrieve privileges for role "${roleName}": ${(error as Error).message}`);
         }
-
-        return Array.from(privileges);
     }
 
+    /**
+     * Verifies permissions against required permissions for specific roles.
+     * Delegates the operation to the dynamically loaded role manager instance.
+     * @param requiredPermissions - List of required permissions as an array of strings.
+     * @param roleNames - Optional list of roles to check permissions for; if undefined, defaults to the current user's roles.
+     * @returns A promise resolving to an object specifying extra, missing, and present permissions.
+     */
     async verifyPermissions(
         requiredPermissions: string[],
         roleNames?: string[]
     ): Promise<{ extra: string[]; missing: string[]; present: string[] }> {
         try {
-            if (!roleNames) {
-                roleNames = await this.getUserRoles();
-            }
-
-            const currentPermissions = new Set<string>();
-            for (const role of roleNames) {
-                (await this.getPrivilegesOfRole(role)).forEach((perm) => currentPermissions.add(perm));
-            }
-
-            const requiredPermissionsSet = new Set(requiredPermissions);
-
-            const extraPermissions = Array.from(
-                new Set([...currentPermissions].filter((x) => !requiredPermissionsSet.has(x)))
-            );
-            const missingPermissions = Array.from(
-                new Set([...requiredPermissionsSet].filter((x) => !currentPermissions.has(x)))
-            );
-            const presentPermissions = Array.from(
-                new Set([...requiredPermissionsSet].filter((x) => currentPermissions.has(x)))
-            );
-
-            return {
-                extra: extraPermissions,
-                missing: missingPermissions,
-                present: presentPermissions,
-            };
-        } catch (e) {
-            console.error(`Unexpected error: ${e}`);
-            return { extra: [], missing: [], present: [] };
+            const srv = await this.getSrv();
+            return await srv.verifyPermissions(requiredPermissions, roleNames);
+        } catch (error) {
+            throw new Error(`Failed to verify permissions: ${(error as Error).message}`);
         }
     }
 }

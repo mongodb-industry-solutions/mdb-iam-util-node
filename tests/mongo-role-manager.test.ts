@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-describe('MongoRoleManager', () => {
+describe('MongoRoleManager with SCRAM', () => {
     let connectionString: string;
     let roleManager: MongoRoleManager;
 
@@ -20,9 +20,15 @@ describe('MongoRoleManager', () => {
         roleManager = new MongoRoleManager(connectionString);
     });
 
-    it('should extract credentials from connection string', () => {
-        expect((roleManager as any).username).toBeDefined();
-        expect((roleManager as any).password).toBeDefined();
+    it('should have valid properties', () => {
+        expect((roleManager as any).ioc).toBeDefined();
+        expect((roleManager as any).opts).toBeDefined();
+    });
+
+    it('should extract credentials from connection string', async () => {
+        let srvScram = await roleManager.getSrv();
+        expect((srvScram as any).username).toBeDefined();
+        expect((srvScram as any).password).toBeDefined();
     });
 
     it('should get user roles', async () => {
@@ -79,5 +85,42 @@ describe('MongoRoleManager', () => {
         const invalidRoleManager = new MongoRoleManager(invalidConnectionString);
 
         await expect(invalidRoleManager.getUserRoles()).rejects.toThrow('Username must be provided or extracted from the connection string.');
+    });
+
+});
+
+describe.skip('MongoRoleManager with X.509', () => {
+    let roleManager: MongoRoleManager;
+
+    beforeAll(() => {
+        roleManager = new MongoRoleManager({
+            uri: `mongodb+srv://cluster0.b4znk.mongodb.net/?authSource=$external&authMechanism=MONGODB-X509`,
+            tls: true,
+            tlsCertificateKeyFile: __dirname + '/../dist/X509-cert-5614286992162784116.pem',
+            // tlsCAFile: 'path/to/ca.pem',
+            authMechanism: 'MONGODB-X509'
+        });
+    });
+
+    it('should verify permissions', async () => {
+        const requiredPermissions = [
+            'search',
+            'read',
+            'find',
+            'insert',
+            'update',
+            'remove',
+            'collMod',
+        ];
+
+        const res = await roleManager.verifyPermissions(requiredPermissions);
+
+        expect(Array.isArray(res.extra)).toBe(true);
+        expect(Array.isArray(res.missing)).toBe(true);
+        expect(Array.isArray(res.present)).toBe(true);
+
+        expect(res.extra.length).toBeGreaterThan(5);
+        expect(res.missing.length).toBeGreaterThan(2);
+        expect(res.present.length).toBeGreaterThan(1);
     });
 });

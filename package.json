@@ -1,6 +1,6 @@
 {
   "name": "@mongodb-solution-assurance/iam-util",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "This repository is a utility project focused on streamlining IAM processes for MongoDB and Node.Js",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
