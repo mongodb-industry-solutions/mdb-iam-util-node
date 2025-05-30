@@ -11,18 +11,24 @@ export class AuthX509 extends AuthGeneric {
             if (username) {
                 return username;
             }
+
+            if (this.username) {
+                return this.username;
+            }
+            
             await this.connect();
             const adminDb: Db = this.client!.db('admin');
             const userInfo = await adminDb.command({ connectionStatus: 1 });
 
             // MongoDB returns the authenticated user's DN under `${externalUsers}`
-            const authenticatedUser = userInfo?.authInfo?.authenticatedUsers?.[0]?.user;
+            this.username = userInfo?.authInfo?.authenticatedUsers?.[0]?.user;
 
-            if (authenticatedUser) {
-                return authenticatedUser; // Example DN: CN=username,OU=team,O=org,L=city,ST=state,C=country
+            if (!this.username) {
+                throw new Error('Authenticated user cannot be determined.');
             }
 
-            throw new Error('Authenticated user cannot be determined.');
+            // Example DN: CN=username,OU=team,O=org,L=city,ST=state,C=country
+            return this.username;
         } catch (e) {
             console.error(`Failed to retrieve authenticated user: ${e}`);
             throw e;
