@@ -10,6 +10,7 @@ export class AuthAdm implements IRoleManager {
 
     constructor(uri?: string | AuthOptions) {
         this.opts = (typeof uri === "string" ? { uri } : uri) || {};
+        this.opts.type = this.opts.type || "SCRAM";
     }
 
     protected async connect(): Promise<void> {
@@ -139,3 +140,5 @@ export class AuthAdm implements IRoleManager {
         }
     }
 }
+
+export default AuthAdm;
