@@ -12,6 +12,13 @@ export class AuthSCRAM extends AuthGeneric {
         this.extractCredentials(this.opts.uri);
     }
 
+    getUsername(username?: string): Promise<string> {
+        if (!username && !this.username) {
+            this.extractCredentials(this.opts.uri);
+        }
+        return super.getUsername(username);
+    }
+
     private extractCredentials(uri?: string): void {
         if (!uri) {
             return;
