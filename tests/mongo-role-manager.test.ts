@@ -20,9 +20,15 @@ describe('MongoRoleManager', () => {
         roleManager = new MongoRoleManager(connectionString);
     });
 
-    it('should extract credentials from connection string', () => {
-        expect((roleManager as any).username).toBeDefined();
-        expect((roleManager as any).password).toBeDefined();
+    it('should have valid properties', () => {
+        expect((roleManager as any).ioc).toBeDefined();
+        expect((roleManager as any).opts).toBeDefined();
+    });
+
+    it('should extract credentials from connection string', async () => {
+        let srvScram = await roleManager.getSrv();
+        expect((srvScram as any).username).toBeDefined();
+        expect((srvScram as any).password).toBeDefined();
     });
 
     it('should get user roles', async () => {
