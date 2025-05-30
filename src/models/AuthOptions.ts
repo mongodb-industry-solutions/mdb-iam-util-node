@@ -1,6 +1,6 @@
 import { MongoClientOptions } from "mongodb";
 
-/**  
+/**
  * Interface for authentication strategy options.
  */
 export interface AuthOptions extends MongoClientOptions {
@@ -12,5 +12,5 @@ export interface AuthOptions extends MongoClientOptions {
     /**
      * Connection string for MongoDB.
      */
-    type?: string;
-}  
+    type?: "SCRAM" | "X.509" | "OAUTH" | "AWS.IAM" | "Kerberos";
+}

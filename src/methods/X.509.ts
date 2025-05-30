@@ -19,7 +19,7 @@ export class AuthAdmX509 extends AuthAdm {
             const authenticatedUser = userInfo?.authInfo?.authenticatedUsers?.[0]?.user;
 
             if (authenticatedUser) {
-                return authenticatedUser; // Example DN: CN=username,OU=team,O=org,L=city,ST=state,C=country  
+                return authenticatedUser; // Example DN: CN=username,OU=team,O=org,L=city,ST=state,C=country
             }
 
             throw new Error('Authenticated user cannot be determined.');
@@ -29,3 +29,5 @@ export class AuthAdmX509 extends AuthAdm {
         }
     }
 }
+
+export default AuthAdmX509;

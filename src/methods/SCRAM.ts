@@ -1,7 +1,7 @@
 import { AuthAdm } from './AuthAdm';
 import { AuthOptions } from '../models/AuthOptions';
 
-/**  
+/**
  * SCRAM-based authentication strategy.
  */
 export class AuthAdmSCRAM extends AuthAdm {
@@ -23,3 +23,5 @@ export class AuthAdmSCRAM extends AuthAdm {
         }
     }
 }
+
+export default AuthAdmSCRAM;
