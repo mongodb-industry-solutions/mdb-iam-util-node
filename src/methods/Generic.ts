@@ -10,11 +10,11 @@ export class AuthGeneric implements IRoleManager {
 
     constructor(uri?: string | AuthOptions) {
         this.opts = (typeof uri === "string" ? { uri } : uri) || {};
-        this.opts.type = this.opts.type || "SCRAM";
+        this.opts.authMechanism = this.opts.authMechanism || "DEFAULT";
     }
 
     protected async connect(): Promise<void> {
-        const { uri, type, ...safeOptions } = this.opts;
+        const { uri, ...safeOptions } = this.opts;
         if (!this.client && uri) {
             this.client = new MongoClient(uri, safeOptions as MongoClientOptions);
             await this.client.connect();

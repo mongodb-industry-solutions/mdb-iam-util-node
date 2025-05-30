@@ -95,7 +95,6 @@ describe.skip('MongoRoleManager with X.509', () => {
     beforeAll(() => {
         roleManager = new MongoRoleManager({
             uri: `mongodb+srv://cluster0.b4znk.mongodb.net/?authSource=$external&authMechanism=MONGODB-X509`,
-            type: "X.509",
             tls: true,
             tlsCertificateKeyFile: __dirname + '/../dist/X509-cert-5614286992162784116.pem',
             // tlsCAFile: 'path/to/ca.pem',

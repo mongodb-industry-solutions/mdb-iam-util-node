@@ -41,10 +41,10 @@ export class MongoRoleManager implements IRoleManager {
      */
     async getSrv(): Promise<IRoleManager> {
         try {
-            this.opts.type = this.opts.type || "SCRAM";
-            let srv = this.ioc.get<IRoleManager>(this.opts.type, [this.opts]);
+            this.opts.authMechanism = this.opts.authMechanism || "DEFAULT";
+            let srv = this.ioc.get<IRoleManager>(this.opts.authMechanism, [this.opts]);
             if (!srv) {
-                throw new Error(`No supported method: ${this.opts.type}`);
+                throw new Error(`No supported method: ${this.opts.authMechanism}`);
             }
             return Promise.resolve(srv);
         } catch (error) {

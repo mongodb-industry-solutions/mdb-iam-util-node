@@ -1,9 +1,9 @@
+import { AuthMechanism } from "mongodb";
 import AuthGeneric from "../methods/Generic";
 import AuthSCRAM from "../methods/SCRAM";
 import AuthX509 from "../methods/X.509";
-import { AuthType } from "../models/AuthOptions";
 
-export type Cache = Record<AuthType, any>;
+export type Cache = Record<string, any>;
 
 export class StaticLocator {
 
@@ -21,11 +21,18 @@ export class StaticLocator {
     constructor() {
         this._cache = {
             "Generic": AuthGeneric,        // Generic authentication method implementation.
-            "SCRAM": AuthSCRAM,            // SCRAM-SHA-based authentication method.
-            "X.509": AuthX509,             // X.509 certificate-based authentication method.
+            "DEFAULT": AuthSCRAM,          // alias for SCRAM-SHA-based
+            "PLAIN": AuthSCRAM,            // alias for SCRAM-SHA-based
+            "SCRAM-SHA-1": AuthSCRAM,      // SCRAM-SHA-based authentication method.
+            "SCRAM-SHA-256": AuthSCRAM,    // alias for SCRAM-SHA-based
+            "MONGODB-X509": AuthX509,      // X.509 certificate-based authentication method.
             "OAUTH": null,                 // Placeholder for OAuth authentication method.
-            "AWS.IAM": null,               // Placeholder for AWS IAM authentication method.
-            "Kerberos": null               // Placeholder for Kerberos authentication method.
+            "MONGODB-AWS": null,           // Placeholder for AWS IAM authentication method.
+            "Kerberos": null,              // Placeholder for Kerberos authentication method.
+            "MONGODB-OIDC": null,
+            "MONGODB_CR": null,
+            "MONGODB_GSSAPI": null,
+
         };
     }
 
@@ -46,7 +53,7 @@ export class StaticLocator {
      * @returns An instance of the requested authentication method, or `null` if uninitialized or unsupported.
      * @throws Error if the authentication type is undefined, unsupported, or fails to initialize.
      */
-    get<T>(type: AuthType, params: Array<any> = []): T | null {
+    get<T>(type: AuthMechanism, params: Array<any> = []): T | null {
         try {
             // Validate the provided authentication type
             if (!type) {
