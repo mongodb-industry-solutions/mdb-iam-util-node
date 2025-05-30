@@ -1,6 +1,6 @@
-import { AuthOptions } from './models/AuthOptions';  
-import { IRoleManager } from './models/IRoleManager';  
-import { Loader } from './utils/loader';
+import { AuthOptions } from './models/AuthOptions';
+import { IRoleManager } from './models/IRoleManager';
+import { StaticLocator as Loader } from './utils/locator';
 
 /**
  * Class responsible for managing roles and permissions in a MongoDB system.
@@ -35,18 +35,18 @@ export class MongoRoleManager implements IRoleManager {
     }
 
     /**
-     * Dynamically loads and instantiates the appropriate role manager implementation.
+     * Static loads and instantiates the appropriate role manager implementation.
      * The type of manager loaded (e.g., SCRAM, X.509) is based on the `type` property in `AuthOptions`.
      * @returns A promise resolving to an instance of `IRoleManager`.
      */
     async getSrv(): Promise<IRoleManager> {
-        if (!this.opts.type) {
-            throw new Error('Authentication type is not defined in AuthOptions.');
-        }
-
         try {
-            // Dynamically load based on `type`.
-            return await this.ioc.get<IRoleManager>(this.opts.type, [this.opts]);
+            this.opts.type = this.opts.type || "SCRAM";
+            let srv = this.ioc.get<IRoleManager>(this.opts.type, [this.opts]);
+            if (!srv) {
+                throw new Error(`No supported method: ${this.opts.type}`);
+            }
+            return Promise.resolve(srv);
         } catch (error) {
             throw new Error(`Failed to load RoleManager service: ${(error as Error).message}`);
         }
@@ -57,12 +57,12 @@ export class MongoRoleManager implements IRoleManager {
      * Delegates the operation to the dynamically loaded role manager instance.
      * @param username - Optional username to retrieve; if undefined, defaults to the current authenticated user.
      * @returns A promise resolving to the username as a string.
-     */  
+     */
     async getUsername(username?: string): Promise<string> {
         try {
             const srv = await this.getSrv();
             return await srv.getUsername(username);
-        } catch (error) {  
+        } catch (error) {
             throw new Error(`Failed to retrieve username: ${(error as Error).message}`);
         }
     }
@@ -77,7 +77,7 @@ export class MongoRoleManager implements IRoleManager {
         try {
             const srv = await this.getSrv();
             return await srv.getUserRoles(username);
-        } catch (error) {  
+        } catch (error) {
             throw new Error(`Failed to retrieve user roles: ${(error as Error).message}`);
         }
     }
@@ -92,7 +92,7 @@ export class MongoRoleManager implements IRoleManager {
         try {
             const srv = await this.getSrv();
             return await srv.getPrivilegesOfRole(roleName);
-        } catch (error) {  
+        } catch (error) {
             throw new Error(`Failed to retrieve privileges for role "${roleName}": ${(error as Error).message}`);
         }
     }
@@ -103,7 +103,7 @@ export class MongoRoleManager implements IRoleManager {
      * @param requiredPermissions - List of required permissions as an array of strings.
      * @param roleNames - Optional list of roles to check permissions for; if undefined, defaults to the current user's roles.
      * @returns A promise resolving to an object specifying extra, missing, and present permissions.
-     */  
+     */
     async verifyPermissions(
         requiredPermissions: string[],
         roleNames?: string[]
