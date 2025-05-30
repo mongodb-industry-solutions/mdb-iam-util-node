@@ -30,7 +30,7 @@ export class Loader {
      * @throws Error if the directory path is invalid or empty.
      */
     constructor(directory?: string) {
-        directory = (directory && typeof directory !== 'string') || !directory ? "../methods" : directory;
+        directory = (directory && typeof directory !== 'string') || !directory ? __dirname + "/../methods" : directory;
         // Convert to absolute path for safety
         this.directory = path.resolve(directory);
         this._cache = {};

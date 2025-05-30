@@ -7,8 +7,8 @@ import { AuthOptions } from '../models/AuthOptions';
 export class AuthSCRAM extends AuthGeneric {
     protected password: string | null = null;
 
-    constructor(uri?: string | AuthOptions) {
-        super(uri);
+    constructor(opt?: string | AuthOptions) {
+        super(opt);
         this.extractCredentials(this.opts.uri);
     }
 

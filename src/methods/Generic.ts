@@ -1,4 +1,4 @@
-import { MongoClient, Db, Document } from 'mongodb';
+import { MongoClient, Db, Document, MongoClientOptions } from 'mongodb';
 import { IRoleManager } from '../models/IRoleManager';
 import { AuthOptions } from '../models/AuthOptions';
 
@@ -14,8 +14,9 @@ export class AuthGeneric implements IRoleManager {
     }
 
     protected async connect(): Promise<void> {
-        if (!this.client && this.opts.uri) {
-            this.client = new MongoClient(this.opts.uri, this.opts);
+        const { uri, type, ...safeOptions } = this.opts;
+        if (!this.client && uri) {
+            this.client = new MongoClient(uri, safeOptions as MongoClientOptions);
             await this.client.connect();
         }
     }
