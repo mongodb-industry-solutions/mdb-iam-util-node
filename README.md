@@ -196,4 +196,4 @@ For a better understanding, please refer to the article ["Flexible Authenticatio
 
 - [mdb-iam-util-demo](https://github.com/mongodb-industry-solutions/mdb-iam-util-demo): Demo application to implement some utilities, packages, and libraries related to IAM processes.
 - [mdb-iam-util-python](https://github.com/mongodb-industry-solutions/mdb-iam-util-python): This repository is a utility project focused on streamlining IAM processes for MongoDB and Python
-- [mdb-iam-util-demo](https://github.com/mongodb-industry-solutions/mdb-iam-util-node): This repository is a utility project focused on streamlining IAM processes for MongoDB and Node.Js
+- [mdb-iam-util-node](https://github.com/mongodb-industry-solutions/mdb-iam-util-node): This repository is a utility project focused on streamlining IAM processes for MongoDB and Node.Js
