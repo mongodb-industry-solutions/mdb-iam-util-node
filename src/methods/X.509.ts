@@ -1,10 +1,10 @@
-import { AuthAdm } from './AuthAdm';
+import { AuthGeneric } from './Generic';
 import { Db } from 'mongodb';
 
 /**
  * X.509-based authentication strategy.
  */
-export class AuthAdmX509 extends AuthAdm {
+export class AuthX509 extends AuthGeneric {
 
     async getUsername(username?: string): Promise<string> {
         try {
@@ -30,4 +30,4 @@ export class AuthAdmX509 extends AuthAdm {
     }
 }
 
-export default AuthAdmX509;
+export default AuthX509;

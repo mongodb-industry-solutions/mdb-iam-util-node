@@ -1,10 +1,10 @@
-import { AuthAdm } from './AuthAdm';
+import { AuthGeneric } from './Generic';
 import { AuthOptions } from '../models/AuthOptions';
 
 /**
  * SCRAM-based authentication strategy.
  */
-export class AuthAdmSCRAM extends AuthAdm {
+export class AuthSCRAM extends AuthGeneric {
     protected password: string | null = null;
 
     constructor(uri?: string | AuthOptions) {
@@ -24,4 +24,4 @@ export class AuthAdmSCRAM extends AuthAdm {
     }
 }
 
-export default AuthAdmSCRAM;
+export default AuthSCRAM;

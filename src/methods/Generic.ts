@@ -2,7 +2,7 @@ import { MongoClient, Db, Document } from 'mongodb';
 import { IRoleManager } from '../models/IRoleManager';
 import { AuthOptions } from '../models/AuthOptions';
 
-export class AuthAdm implements IRoleManager {
+export class AuthGeneric implements IRoleManager {
 
     protected opts: AuthOptions;
     protected client: MongoClient | null = null;
@@ -141,4 +141,4 @@ export class AuthAdm implements IRoleManager {
     }
 }
 
-export default AuthAdm;
+export default AuthGeneric;
